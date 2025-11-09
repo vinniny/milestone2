@@ -23,13 +23,11 @@ module regfile(
   assign o_rs2_data = (i_rs2_addr == 5'd0) ? 32'd0 : registers[i_rs2_addr];
 
   // Synchronous write with x0 protection
-  always_ff @(posedge i_clk or negedge i_reset) begin
-    if (!i_reset) begin
-      // Reset all registers to zero
-      integer i;
-      for (i = 0; i < 32; i = i + 1)
-        registers[i] <= 32'b0;
-    end else if (i_rd_wren && (i_rd_addr != 5'd0)) begin
+  // Note: Milestone-2 forbids 'for' loops in RTL, so registers are not reset
+  // Register values are undefined after reset (acceptable for RV32I)
+  // x0 is hardwired to zero via read logic, not reset
+  always_ff @(posedge i_clk) begin
+    if (i_rd_wren && (i_rd_addr != 5'd0)) begin
       // Write to register (except x0)
       registers[i_rd_addr] <= i_rd_data;
     end

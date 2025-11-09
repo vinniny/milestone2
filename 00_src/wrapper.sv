@@ -45,7 +45,7 @@ module wrapper (
         .o_insn_vld (insn_vld),
 
         // Map LEDRs (core drives 32; board shows 10)
-        .instr(ledr32),
+        .o_io_ledr  (ledr32),
         .o_io_ledg  (),           // not brought to the board
         .o_io_hex0  (HEX0),
         .o_io_hex1  (HEX1),
