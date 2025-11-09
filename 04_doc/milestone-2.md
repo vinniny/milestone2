@@ -28,7 +28,7 @@ Design and verify a **single-cycle RV32I processor** that is synthesizable, func
 
 ### Memory-mapped
 
-| Device        | Address                 |
+| Mapping       | Address                 |
 | ------        | ----------------------- |
 | Reserved      | 0x1001_1000-0xFFFF_FFFF |
 | SW            | 0x1001_0000-0x1001_0FFF |

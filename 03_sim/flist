@@ -10,6 +10,7 @@
 ./../00_src/output_buffer.sv
 ./../00_src/PC.sv
 ./../00_src/i_mem.sv
+./../00_src/clock_25M.sv
 ./../00_src/regfile.sv
 ./../00_src/FA_32bit.sv
 ./../00_src/mux2_1.sv
@@ -17,5 +18,6 @@
 ./../00_src/imm_gen.sv
 ./../00_src/single_cycle.sv
 ./../00_src/dmem.sv
+./../00_src/wrapper.sv
 ./../00_src/lsu.sv
 ./../00_src/brc.sv
