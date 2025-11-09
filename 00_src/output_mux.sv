@@ -49,15 +49,20 @@ module output_mux(
     if (f_dmem_valid) begin
       o_ld_data = b_dmem_data;
     end else if (f_io_valid) begin
-      // Decode I/O address using lower 16 bits to match output_buffer addressing
-      case (i_ld_addr[15:0])
-        16'h7000: o_ld_data = b_io_ledr;  // 0x1000_7000: Red LEDs
-        16'h7010: o_ld_data = b_io_ledg;  // 0x1000_7010: Green LEDs
-        16'h7020: o_ld_data = b_io_hexl;  // 0x1000_7020: HEX3-0
-        16'h7024: o_ld_data = b_io_hexh;  // 0x1000_7024: HEX7-4
-        16'h7030: o_ld_data = b_io_lcd;   // 0x1000_7030: LCD
-        16'h7800: o_ld_data = b_io_sw;    // 0x1001_7800: Switches
-        default:   o_ld_data = 32'd0;
+      // Decode I/O address using bits [15:12] for 4KB blocks (matching output_buffer)
+      case (i_ld_addr[15:12])
+        4'h0: o_ld_data = b_io_ledr;  // 0x1000_0xxx: Red LEDs
+        4'h1: o_ld_data = b_io_ledg;  // 0x1000_1xxx: Green LEDs
+        4'h2: o_ld_data = b_io_hexl;  // 0x1000_2xxx: HEX3-0
+        4'h3: o_ld_data = b_io_hexh;  // 0x1000_3xxx: HEX7-4
+        4'h4: o_ld_data = b_io_lcd;   // 0x1000_4xxx: LCD
+        default: begin
+          // Check if reading from switch region (0x1001_0xxx)
+          if (i_ld_addr[31:16] == 16'h1001 && i_ld_addr[15:12] == 4'h0)
+            o_ld_data = b_io_sw;        // 0x1001_0xxx: Switches
+          else
+            o_ld_data = 32'd0;
+        end
       endcase
     end
   end

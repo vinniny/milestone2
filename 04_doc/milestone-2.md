@@ -26,18 +26,29 @@ Design and verify a **single-cycle RV32I processor** that is synthesizable, func
 | Reserved | ≥ 0x0000_0800           | No aliasing, no stalls   |
 | Extra    | Up to 0x0000_7FFF       | Extended sim environment |
 
-### I/O Map
+### Memory-mapped
 
-| Device | Address                 |
-| ------ | ----------------------- |
-| LEDR   | 0x1000_0000-0x1000_0FFF |
-| LEDG   | 0x1000_1000-0x1000_1FFF |
-| HEX (7-4)    | 0x1000_3000–0x1000_3FFF |
-| HEX (0-3)    | 0x1000_2000–0x1000_2FFF |
-| LCD    | 0x1000_4000             |
-| SW     | 0x1001_0000             |
+| Device        | Address                 |
+| ------        | ----------------------- |
+| Reserved      | 0x1001_1000-0xFFFF_FFFF |
+| SW            | 0x1001_0000-0x1001_0FFF |
+| Reserved      | 0x1000_5000-0x1000_FFFF |
+| LCD           | 0x1000_4000-0x1000_4FFF |
+| HEXLEDs (7-4) | 0x1000_3000-0x1000_3FFF |
+| HEXLEDs (0-3) | 0x1000_2000-0x1000_2FFF |
+| LEDG          | 0x1000_1000-0x1000_1FFF |
+| LEDR          | 0x1000_0000-0x1000_0FFF |
+| Reserved      | 0x0000_0800-0x0FFF_FFFF |
+| MEMORY (2KiB) | 0x0000_0000-0x0000_07FF |
+
 
 ### Top-Level Ports
+
+**Top-level module:** `single_cycle.sv` (or `singlecycle.sv` per PDF specification)
+
+**Port naming:** Can use either convention:
+- PDF style: `iclk`, `ireset`, `opcdebug`, `oinsnvld`, `oioledr`, `oioledg`, `oiohex0..7`, `oiolcd`, `iiosw`
+- Underscore style: `i_clk`, `i_reset`, `o_pc_debug`, `o_insn_vld`, `o_io_ledr`, `o_io_ledg`, `o_io_hex[0-7]`, `o_io_lcd`, `i_io_sw`
 
 ```
 i_clk, i_reset, o_pc_debug, o_insn_vld,
@@ -48,15 +59,15 @@ o_io_ledr, o_io_ledg, o_io_hex[0–7], o_io_lcd, i_io_sw
 
 ## 3. Module Hierarchy
 
-1. **control_unit:** Decode (opcode/funct3/funct7) → control signals.
+1. **control_unit (or ControlUnit):** Decode (opcode/funct3/funct7) → control signals.
 2. **datapath:** PC, regfile, ALU, branch/next-PC muxes, memory routing.
-3. **alu:** Logical/arithmetic operations per RV32I (no mul/div).
-4. **brc:** Branch comparisons (eq/ne/ltu/lt/geu/ge) combinational.
-5. **register_file:** 32×32-bit; x0 hardwired to 0.
-6. **imem:** Async-read / sync-write; `$readmemh` init; retains on reset.
-7. **dmem:** Async-read / sync-write; same timing model as IMEM.
-8. **lsu:** Address/align, byte-enable (`wstrb`), sign/zero-extend loads.
-9. **top_single_cycle:** Integration + I/O mapping + debug.
+3. **alu (or ALU):** Logical/arithmetic operations per RV32I (no mul/div).
+4. **brc (or BRC):** Branch comparisons (eq/ne/ltu/lt/geu/ge) combinational.
+5. **regfile (or register_file):** 32×32-bit; x0 hardwired to 0.
+6. **i_mem (or imem):** Async-read / sync-write; `$readmemh` init; retains on reset.
+7. **dmem (or d_mem):** Async-read / sync-write; same timing model as IMEM.
+8. **lsu (or LSU):** Address/align, byte-enable (`wstrb`), sign/zero-extend loads.
+9. **single_cycle (top-level):** Integration + I/O mapping + debug.
 
 ---
 

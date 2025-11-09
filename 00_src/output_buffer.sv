@@ -87,12 +87,12 @@ module output_buffer(
 
     // Update addressed I/O register if write enabled
     if (f_io_wren && (write_mask != 32'h0000_0000)) begin
-      case (i_io_addr[15:0])  // Use bits [15:0] to decode device
-        16'h7000: next_b_io_ledr = (b_io_ledr & ~write_mask) | (write_data & write_mask); // 0x1000_7000
-        16'h7010: next_b_io_ledg = (b_io_ledg & ~write_mask) | (write_data & write_mask); // 0x1000_7010
-        16'h7020: next_b_io_hexl = (b_io_hexl & ~write_mask) | (write_data & write_mask); // 0x1000_7020
-        16'h7024: next_b_io_hexh = (b_io_hexh & ~write_mask) | (write_data & write_mask); // 0x1000_7024
-        16'h7030: next_b_io_lcd  = (b_io_lcd  & ~write_mask) | (write_data & write_mask); // 0x1000_7030
+      case (i_io_addr[15:12])  // Use bits [15:12] to decode device (4KB blocks)
+        4'h0: next_b_io_ledr = (b_io_ledr & ~write_mask) | (write_data & write_mask); // 0x1000_0xxx
+        4'h1: next_b_io_ledg = (b_io_ledg & ~write_mask) | (write_data & write_mask); // 0x1000_1xxx
+        4'h2: next_b_io_hexl = (b_io_hexl & ~write_mask) | (write_data & write_mask); // 0x1000_2xxx
+        4'h3: next_b_io_hexh = (b_io_hexh & ~write_mask) | (write_data & write_mask); // 0x1000_3xxx
+        4'h4: next_b_io_lcd  = (b_io_lcd  & ~write_mask) | (write_data & write_mask); // 0x1000_4xxx
         default: ;  // No change for other addresses
       endcase
     end

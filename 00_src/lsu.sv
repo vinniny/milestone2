@@ -13,12 +13,12 @@
 //
 // Memory Map:
 //   0x0000_0000 - 0x0000_07FF: Data memory (2 KiB)
-//   0x1000_7000 - 0x1000_7003: LEDs (red)
-//   0x1000_7010 - 0x1000_7013: LEDs (green)
-//   0x1000_7020 - 0x1000_7023: 7-segment displays (low 4 digits)
-//   0x1000_7024 - 0x1000_7027: 7-segment displays (high 4 digits)
-//   0x1000_7030 - 0x1000_7033: LCD display
-//   0x1001_7800 - 0x1001_7803: Switch inputs
+//   0x1000_0000 - 0x1000_0FFF: Red LEDs (LEDR)
+//   0x1000_1000 - 0x1000_1FFF: Green LEDs (LEDG)
+//   0x1000_2000 - 0x1000_2FFF: 7-segment displays (low 4 digits, HEX0-3)
+//   0x1000_3000 - 0x1000_3FFF: 7-segment displays (high 4 digits, HEX4-7)
+//   0x1000_4000 - 0x1000_4FFF: LCD display
+//   0x1001_0000 - 0x1001_0FFF: Switch inputs
 //
 // Alignment Rules:
 //   - SB/LB:  No alignment required (any address)
@@ -63,14 +63,13 @@ module lsu(
   input  logic [31:0] i_io_sw      // Switch inputs
 );
 
-  // Memory-mapped I/O address definitions (upper 16 bits of address)
-  localparam LEDR = 16'h7000;  // Red LEDs at 0x1000_7000
-  localparam LEDG = 16'h7010;  // Green LEDs at 0x1000_7010
-  localparam HEXL = 16'h7020;  // 7-segment low (digits 0-3) at 0x1000_7020
-  localparam HEXH = 16'h7024;  // 7-segment high (digits 4-7) at 0x1000_7024
-  localparam LCD  = 16'h7030;  // LCD display at 0x1000_7030
-  localparam SW   = 16'h7800;  // Switch inputs at 0x1001_7800
-  localparam BTN  = 16'h7810;  // Button inputs at 0x1001_7810 (reserved)
+  // Memory-mapped I/O address definitions (bits [15:12] for 4KB blocks)
+  localparam LEDR = 4'h0;  // Red LEDs at 0x1000_0xxx
+  localparam LEDG = 4'h1;  // Green LEDs at 0x1000_1xxx
+  localparam HEXL = 4'h2;  // 7-segment low (digits 0-3) at 0x1000_2xxx
+  localparam HEXH = 4'h3;  // 7-segment high (digits 4-7) at 0x1000_3xxx
+  localparam LCD  = 4'h4;  // LCD display at 0x1000_4xxx
+  localparam SW   = 4'h0;  // Switch inputs at 0x1001_0xxx (note: different upper 16 bits)
 
   // Internal signals for memory and I/O data paths
   logic [31:0] b_dmem_data;    // Data read from DMEM

@@ -159,7 +159,15 @@ PC program_counter(
 		.o_pc(pc)
 	);
 
-assign pc_four = pc + 32'd4;  // Compute PC+4 for sequential execution
+// PC+4 computation using full adder (complies with milestone-2 - no + operator)
+logic pc_four_cout;  // Carry out (unused)
+FA_32bit pc_adder(
+	.A(pc),
+	.B(32'd4),
+	.Cin(1'b0),
+	.Sum(pc_four),
+	.Cout(pc_four_cout)
+);
 
 //------------------------------------------------------------------------------
 // Instruction Fetch
