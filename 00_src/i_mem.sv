@@ -2,7 +2,8 @@
 // Module: i_mem
 // Description: Instruction Memory (IMEM) - 2 KiB word-addressed ROM
 //              Asynchronous read, preloaded from hex file
-//              Contents persist across resets
+//              For FPGA: Uses $readmemh with synthesis attributes
+//              For Quartus: Memory Initialization File (.mif) or .hex
 // ============================================================================
 module i_mem(
   input  [31:0] i_addr,              // Byte address input
@@ -15,11 +16,11 @@ module i_mem(
   (* rom_style = "block" *)      // Additional hint for ROM inference
   logic [31:0] mem [0:2047];     // 2048 words × 4 bytes = 8 KiB
 
-  // Load instruction memory from hex file at simulation start
-  // Memory contents persist across resets
+  // Load instruction memory from hex file
+  // For FPGA synthesis: Quartus supports $readmemh in initial blocks
+  // Memory contents are baked into the FPGA bitstream
   initial begin
-    static string test_file = "/home/vinniny/projects/riscv/02_test/isa_4b.hex";
-    $readmemh(test_file, mem);
+    $readmemh("counter_v2.hex", mem);
   end
 
   // Asynchronous read: convert byte address to word address

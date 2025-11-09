@@ -30,9 +30,10 @@ Design and verify a **single-cycle RV32I processor** that is synthesizable, func
 
 | Device | Address                 |
 | ------ | ----------------------- |
-| LEDR   | 0x1000_0000             |
-| LEDG   | 0x1000_1000             |
-| HEX    | 0x1000_2000–0x1000_3000 |
+| LEDR   | 0x1000_0000-0x1000_0FFF |
+| LEDG   | 0x1000_1000-0x1000_1FFF |
+| HEX (7-4)    | 0x1000_3000–0x1000_3FFF |
+| HEX (0-3)    | 0x1000_2000–0x1000_2FFF |
 | LCD    | 0x1000_4000             |
 | SW     | 0x1001_0000             |
 

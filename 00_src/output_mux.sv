@@ -49,15 +49,15 @@ module output_mux(
     if (f_dmem_valid) begin
       o_ld_data = b_dmem_data;
     end else if (f_io_valid) begin
-      // Decode I/O address based on upper bits
-      case (i_ld_addr[31:12])
-        20'h1000_0: o_ld_data = b_io_ledr;  // 0x1000_0000: Red LEDs
-        20'h1000_1: o_ld_data = b_io_ledg;  // 0x1000_1000: Green LEDs
-        20'h1000_2: o_ld_data = b_io_hexl;  // 0x1000_2000: HEX3-0
-        20'h1000_3: o_ld_data = b_io_hexh;  // 0x1000_3000: HEX7-4
-        20'h1000_4: o_ld_data = b_io_lcd;   // 0x1000_4000: LCD
-        20'h1001_0: o_ld_data = b_io_sw;    // 0x1001_0000: Switches
-        default:    o_ld_data = 32'd0;
+      // Decode I/O address using lower 16 bits to match output_buffer addressing
+      case (i_ld_addr[15:0])
+        16'h7000: o_ld_data = b_io_ledr;  // 0x1000_7000: Red LEDs
+        16'h7010: o_ld_data = b_io_ledg;  // 0x1000_7010: Green LEDs
+        16'h7020: o_ld_data = b_io_hexl;  // 0x1000_7020: HEX3-0
+        16'h7024: o_ld_data = b_io_hexh;  // 0x1000_7024: HEX7-4
+        16'h7030: o_ld_data = b_io_lcd;   // 0x1000_7030: LCD
+        16'h7800: o_ld_data = b_io_sw;    // 0x1001_7800: Switches
+        default:   o_ld_data = 32'd0;
       endcase
     end
   end
