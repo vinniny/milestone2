@@ -29,10 +29,11 @@ always @(negedge i_clk) begin
         $write("%c", o_io_ledr[7:0]);
     end
 
-    if (o_pc_debug == 32'h1c) begin
-        $display("\nEND of ISA test\n");
-        $finish;
-    end
+    // Disabled for counter testing - let testbench control simulation end
+    // if (o_pc_debug == 32'h1c) begin
+    //     $display("\nEND of ISA test\n");
+    //     $finish;
+    // end
   end
 end
 

@@ -20,7 +20,7 @@ module i_mem(
   // For FPGA synthesis: Quartus supports $readmemh in initial blocks
   // Memory contents are baked into the FPGA bitstream
   initial begin
-    $readmemh("../02_test/isa_4b.hex", mem);
+    $readmemh("../02_test/counter_v3_fast.hex", mem);
   end
 
   // Asynchronous read: convert byte address to word address

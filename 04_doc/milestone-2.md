@@ -2,7 +2,7 @@
 
 ## 1. Objective
 
-Design and verify a **single-cycle RV32I processor** that is synthesizable, functionally correct, and passes all provided ISA tests. Behavioral and FPGA implementations must be equivalent.
+Design and verify a **single-cycle RV32I processor** that is synthesizable, functionally correct, and passes all provided ISA tests. Behavioral and FPGA implementations must be equivalent. The processor is implemented with the ISA RV32I, excluding FENCE instructions. To enable communication between your custom processor (soft-core) and ex-ternal peripherals, some modifications to the standard processor design are necessary. The standard peripherals it must support are LCD, LEDs, and SWITCHes; seven-segment LEDs are optional. In order to accommodate the lecture, for memory, the processor utilizes two identical logic element memory models. One is read-only for the instruction memory, while the other is read-write for the data memory.
 
 ---
 
@@ -54,6 +54,18 @@ Design and verify a **single-cycle RV32I processor** that is synthesizable, func
 i_clk, i_reset, o_pc_debug, o_insn_vld,
 o_io_ledr, o_io_ledg, o_io_hex[0–7], o_io_lcd, i_io_sw
 ```
+
+| Signal name | Width |  Direction | Description |
+| --- | --- | --- | --- |
+| iclk | 1 | input | Global clock, active on the rising edge. |
+| ireset | 1 | input | Global low active reset. |
+| opcdebug | 32 | output | Debug program counter. |
+| oinsnvld | 1 | output | Instruction valid. |
+| oioledr | 32 | output | Output for driving red LEDs. |
+| oioledg | 32 | output | Output for driving green LEDs. |
+| oiohex0..7 | 7 | output | Output for driving 7-segment LED displays. |
+| oiolcd | 32 | output | Output for driving the LCD register. |
+| iiosw | 32 | input | Input for switches. |
 
 ---
 

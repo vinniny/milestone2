@@ -22,6 +22,17 @@ gui:
 	@gtkwave dump.vcd &
 
 
+.PHONY: hexled
+hexled:
+	@echo "-> Testing HEXLED outputs with counter_v3.hex"
+	@echo "-> Compiling with iverilog"
+	@iverilog -g2012 -I../01_bench -o sim_hexled.vvp \
+		../01_bench/tb_hexled.sv \
+		../00_src/*.sv 2>&1 | tee compile_hexled.log
+	@echo "-> Running HEXLED test"
+	@vvp sim_hexled.vvp 2>&1 | tee sim_hexled.log
+	@echo "-> HEXLED test complete, check sim_hexled.log"
+
 .PHONY: clean
 clean:
 	@echo "-> CLEAN"
