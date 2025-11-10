@@ -42,10 +42,12 @@ riscv/
 │   └── scoreboard.sv    # Test validation
 │
 ├── 02_test/             # Test programs
-│   ├── stopwatch.s          # BCD stopwatch source
-│   ├── stopwatch_fast.hex   # Assembled stopwatch
-│   ├── isa_1b.hex           # ISA validation test 1
-│   └── isa_4b.hex           # ISA validation test 2
+│   ├── stopwatch.s              # BCD stopwatch source (fast)
+│   ├── stopwatch_fast.hex       # Simulation version (fast delay)
+│   ├── stopwatch_hardware.s     # BCD stopwatch source (hardware)
+│   ├── stopwatch_hardware.hex   # Hardware version (real-time delay)
+│   ├── isa_1b.hex               # ISA validation test 1
+│   └── isa_4b.hex               # ISA validation test 2
 │
 ├── 03_sim/              # Simulation environment
 │   ├── run_hexled_test.sh   # Stopwatch test script
@@ -186,6 +188,33 @@ These validate:
 - Immediate operations: ADDI, ANDI, ORI, XORI, SLTI, SLTIU
 - Upper immediates: LUI, AUIPC
 
+### Stopwatch Programs
+
+**Two versions available:**
+
+#### 1. Simulation Version (Fast)
+- **Files**: `stopwatch.s`, `stopwatch_fast.hex`
+- **Delay**: 10 cycles per increment
+- **Purpose**: Quick testbench validation
+- **Update Rate**: ~83 cycles per count
+- **Usage**: `./run_hexled_test.sh`
+- **Best for**: Simulation and testing
+
+#### 2. Hardware Version (Real-time)
+- **Files**: `stopwatch_hardware.s`, `stopwatch_hardware.hex`
+- **Delay**: 10,000,000 cycles (nested loops: 1000 × 10000)
+- **Purpose**: Real FPGA deployment
+- **Update Rate**: ~2 seconds per count at 10 MHz
+- **Usage**: Quartus synthesis → DE-10 board
+- **Best for**: Visible real-time counting on hardware
+
+**Both versions include:**
+- Same BCD format (MM:SS:CC: 00:00:00 to 99:59:99)
+- Same pause/resume on SW[0]
+- Same 7-segment encoding
+- Same rollover logic
+- Only difference: delay loop timing
+
 ### Stopwatch Test (tb_hexled.sv)
 
 10 comprehensive test categories:
@@ -224,6 +253,7 @@ make sim                   # Run ISA tests
 
 ### Modifying the Stopwatch
 
+**For simulation version (fast):**
 ```bash
 cd 02_test
 vim stopwatch.s
@@ -237,6 +267,33 @@ hexdump -v -e '1/4 "%08x\n"' stopwatch.bin > stopwatch_fast.hex
 cd ../03_sim
 ./run_hexled_test.sh
 ```
+
+**For hardware version (real-time):**
+```bash
+cd 02_test
+vim stopwatch_hardware.s
+
+# Assemble
+riscv64-unknown-elf-as -march=rv32i -mabi=ilp32 -o stopwatch_hardware.o stopwatch_hardware.s
+riscv64-unknown-elf-objcopy -O binary stopwatch_hardware.o stopwatch_hardware.bin
+hexdump -v -e '1/4 "%08x\n"' stopwatch_hardware.bin > stopwatch_hardware.hex
+
+# Deploy to FPGA
+# 1. Update i_mem.sv to load stopwatch_hardware.hex
+# 2. Synthesize with Quartus
+# 3. Program DE-10 board
+```
+
+### Hardware Deployment
+
+To deploy the hardware stopwatch to the DE-10 FPGA:
+
+1. **Update instruction memory** in your RTL to load `stopwatch_hardware.hex`
+2. **Synthesize** the design with Quartus Prime
+3. **Generate** programming file (.sof)
+4. **Program** the DE-10 board via USB Blaster
+5. **Observe** real-time counting on 7-segment displays
+6. **Use SW[0]** to pause/resume the counter
 
 ---
 
